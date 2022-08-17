@@ -18,8 +18,9 @@ public static class BindersGenerator
 
     private static void Remove()
     {
-        string path = $"{UnityEngine.Application.dataPath}/Scripts/Generated/Resolvers";
-        File.Delete($"{path}/ResolversGenerated.cs");
+        string path = $"{UnityEngine.Application.dataPath}/Scripts/Generated/Resolvers/ResolversGenerated.cs";
+        if (File.Exists(path))
+            File.Delete(path);
     }
 
     [UnityEditor.Callbacks.DidReloadScripts]
@@ -48,7 +49,7 @@ public static class BindersGenerator
             reactiveTypes.Add(type);
             content +=
                 $@"    
-                public class Resolver_{type.FullName.Replace('.','_')}: IResolver
+                public class Resolver_{type.FullName.Replace('.', '_')}: IResolver
                 {{
                         private Dictionary<string, Func<{type.FullName}, IReactiveProperty>> map = new()
                         {{
@@ -78,7 +79,7 @@ public static class BindersGenerator
             {{
                 Binders.AddResolvers(new()
                 {{
-                    {string.Join("\r\n", reactiveTypes.Select(t => $"{{typeof({t.FullName}),new Resolver_{t.FullName.Replace('.','_')}()}},"))}    
+                    {string.Join("\r\n", reactiveTypes.Select(t => $"{{typeof({t.FullName}),new Resolver_{t.FullName.Replace('.', '_')}()}},"))}    
                 }});
             }}
         }}}}";
