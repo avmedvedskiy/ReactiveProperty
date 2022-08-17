@@ -19,6 +19,16 @@ namespace MVVM
         private event Action<T> _onValueChanged;
         [SerializeField] private T _value;
 
+        public ReactiveProperty()
+        {
+            _value = default;
+        }
+
+        public ReactiveProperty(T value)
+        {
+            _value = value;
+        }
+
         public T Value
         {
             get => _value;
