@@ -7,7 +7,7 @@ namespace MVVM
         public IReactiveProperty Map(Object target, string name)
         {
             //add cache
-            return target.GetType().GetField(name)?.GetValue(target) as IReactiveProperty;
+            return target.GetType().GetProperty(name)?.GetValue(target) as IReactiveProperty;
         }
     }
 }

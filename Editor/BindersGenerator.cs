@@ -39,8 +39,8 @@ public static class BindersGenerator
         {
             //Debug.Log($"Class name = {type.Name}");
             var fields = type
-                .GetFields()
-                .Where(f => f.FieldType.GetInterfaces().Contains(typeof(IReactiveProperty)))
+                .GetProperties()
+                .Where(f => f.PropertyType.GetInterfaces().Contains(typeof(IReactiveProperty)))
                 .Select(fi => $@"{{ ""{fi.Name}"", o => o.{fi.Name} }},")
                 .ToList();
             if (fields.Count == 0)
