@@ -23,11 +23,12 @@ namespace MVVM
     {
         [SerializeField] private SyncReactiveProperty _target;
         
-        private IReactiveProperty<T> _property;
-        private IReactiveProperty<T> Property => _property ??= (IReactiveProperty<T>)_target.GetSyncProperty();
+        private ReactiveProperty<T> _property;
+        private ReactiveProperty<T> Property => _property ??= (ReactiveProperty<T>)_target.GetSyncProperty();
         public void OnEnable()
         {
             Bind();
+            UpdateView(Property.Value);
         }
 
         public void OnDisable()
