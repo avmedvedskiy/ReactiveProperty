@@ -38,12 +38,19 @@ public static class BindersGenerator
         foreach (var type in types)
         {
             //Debug.Log($"Class name = {type.Name}");
-            var fields = type
+            var allproperties = type
                 .GetProperties()
                 .Where(f => f.PropertyType.GetInterfaces().Contains(typeof(IReactiveProperty)))
                 .Select(fi => $@"{{ ""{fi.Name}"", o => o.{fi.Name} }},")
                 .ToList();
-            if (fields.Count == 0)
+            var allFields = type
+                .GetFields()
+                .Where(f => f.FieldType.GetInterfaces().Contains(typeof(IReactiveProperty)))
+                .Select(fi => $@"{{ ""{fi.Name}"", o => o.{fi.Name} }},")
+                .ToList();
+
+            allproperties.AddRange(allFields);
+            if (allproperties.Count == 0)
                 continue;
 
             reactiveTypes.Add(type);
@@ -53,7 +60,7 @@ public static class BindersGenerator
                 {{
                         private Dictionary<string, Func<{type.FullName}, IReactiveProperty>> map = new()
                         {{
-                            {string.Join("\r\n", fields)}
+                            {string.Join("\r\n", allproperties)}
                         }};
 
                         public IReactiveProperty Map(UnityEngine.Object target, string name)
