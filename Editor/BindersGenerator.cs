@@ -6,61 +6,55 @@ using MVVM;
 using UnityEditor;
 using UnityEngine;
 
-public static class BindersGenerator
+namespace MVVM.Editor
 {
-    [MenuItem("Assets/Fix Compile Binding Errors")]
-    private static void ManualGeneration()
+    public static class BindersGenerator
     {
-        Remove();
-        Generate();
-        AssetDatabase.Refresh();
-    }
-
-    private static void Remove()
-    {
-        string path = $"{UnityEngine.Application.dataPath}/Scripts/Generated/Resolvers/ResolversGenerated.cs";
-        if (File.Exists(path))
-            File.Delete(path);
-    }
-
-    [UnityEditor.Callbacks.DidReloadScripts]
-    private static void Generate()
-    {
-        var types = TypeCache
-            .GetTypesDerivedFrom(typeof(MonoBehaviour))
-            .Where(p =>
-                (p.IsPublic || p.IsNestedPublic) &&
-                !p.IsAbstract &&
-                !p.IsGenericType);
-
-        string content = @"using System; using System.Collections.Generic;using MVVM;using UnityEngine;";
-        List<Type> reactiveTypes = new();
-        foreach (var type in types)
+        [MenuItem("Assets/Fix Compile Binding Errors")]
+        private static void ManualGeneration()
         {
-            //Debug.Log($"Class name = {type.Name}");
-            var allproperties = type
-                .GetProperties()
-                .Where(f => f.PropertyType.GetInterfaces().Contains(typeof(IReactiveProperty)))
-                .Select(fi => $@"{{ ""{fi.Name}"", o => o.{fi.Name} }},")
-                .ToList();
-            var allFields = type
-                .GetFields()
-                .Where(f => f.FieldType.GetInterfaces().Contains(typeof(IReactiveProperty)))
-                .Select(fi => $@"{{ ""{fi.Name}"", o => o.{fi.Name} }},")
-                .ToList();
+            Remove();
+            Generate();
+            AssetDatabase.Refresh();
+        }
 
-            allproperties.AddRange(allFields);
-            if (allproperties.Count == 0)
-                continue;
+        private static void Remove()
+        {
+            string path = $"{UnityEngine.Application.dataPath}/Scripts/Generated/Resolvers/ResolversGenerated.cs";
+            if (File.Exists(path))
+                File.Delete(path);
+        }
 
-            reactiveTypes.Add(type);
-            content +=
-                $@"    
+        [UnityEditor.Callbacks.DidReloadScripts]
+        private static void Generate()
+        {
+            var types = TypeCache
+                .GetTypesDerivedFrom(typeof(MonoBehaviour))
+                .Where(p =>
+                    (p.IsPublic || p.IsNestedPublic) &&
+                    !p.IsAbstract &&
+                    !p.IsGenericType);
+
+            string content = @"using System; using System.Collections.Generic;using MVVM;using UnityEngine;";
+            List<Type> reactiveTypes = new();
+            foreach (var type in types)
+            {
+                var allReactive = type
+                    .GetAllReactive()
+                    .Select(name => $@"{{ ""{name}"", o => o.{name} }},")
+                    .ToList();
+
+                if (allReactive.Count == 0)
+                    continue;
+
+                reactiveTypes.Add(type);
+                content +=
+                    $@"    
                 public class Resolver_{type.FullName.Replace('.', '_')}: IResolver
                 {{
                         private Dictionary<string, Func<{type.FullName}, IReactiveProperty>> map = new()
                         {{
-                            {string.Join("\r\n", allproperties)}
+                            {string.Join("\r\n", allReactive)}
                         }};
 
                         public IReactiveProperty Map(UnityEngine.Object target, string name)
@@ -69,15 +63,15 @@ public static class BindersGenerator
                         }}
                 }}
                 ";
-        }
+            }
 
-        if (reactiveTypes.Count == 0)
-        {
-            Remove();
-            return;
-        }
+            if (reactiveTypes.Count == 0)
+            {
+                Remove();
+                return;
+            }
 
-        content += $@"
+            content += $@"
         namespace MVVM{{
         public static class BindersLoader
         {{
@@ -91,8 +85,9 @@ public static class BindersGenerator
             }}
         }}}}";
 
-        string path = $"{UnityEngine.Application.dataPath}/Scripts/Generated/Resolvers";
-        Directory.CreateDirectory(path);
-        File.WriteAllText($"{path}/ResolversGenerated.cs", content);
+            string path = $"{UnityEngine.Application.dataPath}/Scripts/Generated/Resolvers";
+            Directory.CreateDirectory(path);
+            File.WriteAllText($"{path}/ResolversGenerated.cs", content);
+        }
     }
 }
