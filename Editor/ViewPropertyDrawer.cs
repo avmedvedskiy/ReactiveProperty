@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace MVVM.Editor
 {
-    [CustomPropertyDrawer(typeof(TargetPropertyData))]
+    [CustomPropertyDrawer(typeof(SyncReactiveProperty))]
     public class ViewPropertyDrawer : PropertyDrawer
     {
         static readonly GUIContent _noneLabel = new GUIContent("None");

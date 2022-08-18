@@ -5,7 +5,7 @@ using Object = UnityEngine.Object;
 namespace MVVM
 {
     [Serializable]
-    public class TargetPropertyData
+    public class SyncReactiveProperty
     {
         [SerializeField] private Object _target;
         [SerializeField] private string _propertyName;
@@ -21,7 +21,7 @@ namespace MVVM
     
     public abstract class View<T> : MonoBehaviour
     {
-        [SerializeField] private TargetPropertyData _target;
+        [SerializeField] private SyncReactiveProperty _target;
         
         private IReactiveProperty<T> _property;
         private IReactiveProperty<T> Property => _property ??= (IReactiveProperty<T>)_target.GetSyncProperty();
