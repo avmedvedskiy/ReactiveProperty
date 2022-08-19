@@ -4,17 +4,19 @@ namespace MVVM
 {
     public abstract class View<T> : MonoBehaviour
     {
-        [SerializeField] public SyncReactiveProperty<T> _target;
         [SerializeField] private bool _autoUpdateOnEnable = true;
+        [SerializeField] public SyncReactiveProperty<T> _target;
 
-        public void OnEnable()
+        protected T CurrentValue => _target.Property.Value;
+        
+        protected virtual void OnEnable()
         {
             Bind();
             if (_autoUpdateOnEnable)
-                UpdateView(_target.Property.Value);
+                UpdateView(CurrentValue);
         }
 
-        public void OnDisable()
+        protected virtual void OnDisable()
         {
             UnBind();
         }
