@@ -5,18 +5,19 @@ namespace MVVM
 {
     public interface IReactiveProperty
     {
-
     }
+
     public interface IReactiveProperty<T> : IReactiveProperty
     {
-        public void Subscribe(Action<T> action);
-        public void UnSubscribe(Action<T> action);
+        T Value { get; set; }
+        void Subscribe(Action<T> action);
+        void UnSubscribe(Action<T> action);
     }
 
     [Serializable]
     public class ReactiveProperty<T> : IReactiveProperty<T>
     {
-        private event Action<T> _onValueChanged;
+        private event Action<T> OnValueChanged;
         [SerializeField] private T _value;
 
         public ReactiveProperty()
@@ -37,20 +38,19 @@ namespace MVVM
                 if (!Equals(_value, value))
                 {
                     _value = value;
-                    _onValueChanged?.Invoke(_value);
+                    OnValueChanged?.Invoke(_value);
                 }
             }
         }
 
         public void Subscribe(Action<T> action)
         {
-            _onValueChanged += action;
-            action.Invoke(Value);
+            OnValueChanged += action;
         }
 
         public void UnSubscribe(Action<T> action)
         {
-            _onValueChanged -= action;
+            OnValueChanged -= action;
         }
     }
 }

@@ -31,9 +31,8 @@ namespace MVVM.Editor
             var types = TypeCache
                 .GetTypesDerivedFrom(typeof(MonoBehaviour))
                 .Where(p =>
-                    (p.IsPublic || p.IsNestedPublic) &&
-                    !p.IsAbstract &&
-                    !p.IsGenericType);
+                    (p.IsPublic || p.IsNestedPublic)
+                    && !p.IsAbstract);
 
             string content = @"using System; using System.Collections.Generic;using MVVM;using UnityEngine;";
             List<Type> reactiveTypes = new();

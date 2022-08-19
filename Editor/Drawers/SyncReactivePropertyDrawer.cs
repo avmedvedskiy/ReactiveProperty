@@ -1,16 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace MVVM.Editor
 {
-    [CustomPropertyDrawer(typeof(SyncReactiveProperty))]
-    public class ViewPropertyDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(SyncReactiveProperty<>))]
+    public class SyncReactivePropertyDrawer : PropertyDrawer
     {
         static readonly GUIContent _noneLabel = new GUIContent("None");
-
+        private string type;
+        //UnityEventDrawer 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, property);
@@ -18,7 +21,6 @@ namespace MVVM.Editor
             var targetProperty = property.FindPropertyRelative("_target");
             var nameProperty = property.FindPropertyRelative("_propertyName");
 
-            //EditorGUI.PropertyField(position, targetProperty, label, true);
             var afterLabelPosition = EditorGUI.PrefixLabel(position, label);
             afterLabelPosition.width /= 2;
             EditorGUI.ObjectField(afterLabelPosition, targetProperty, GUIContent.none);
@@ -27,11 +29,22 @@ namespace MVVM.Editor
             if (EditorGUI.DropdownButton(afterLabelPosition, DropdownContent(targetProperty,nameProperty), FocusType.Keyboard))
             {
                 //Debug.Log($"{property.displayName} DropdownButton");
-                AddDropdown(targetProperty, nameProperty);
+                AddDropdown(targetProperty, nameProperty,property);
             }
             ClearNameProperty(targetProperty, nameProperty);
             
             EditorGUI.EndProperty();
+        }
+        
+        private static Type GetScriptTypeFromProperty(SerializedProperty property)
+        {
+            if (property.serializedObject.targetObject != null)
+                return property.serializedObject.targetObject.GetType();
+            SerializedProperty property1 = property.serializedObject.FindProperty("m_Script");
+            if (property1 == null)
+                return null;
+            MonoScript objectReferenceValue = property1.objectReferenceValue as MonoScript;
+            return  objectReferenceValue == null ?  null : objectReferenceValue.GetClass();
         }
 
         private static void ClearNameProperty(SerializedProperty targetProperty, SerializedProperty nameProperty)
@@ -65,8 +78,10 @@ namespace MVVM.Editor
             return nameProperty.stringValue == propertyName &&
                    targetProperty.objectReferenceValue.GetType() == component.GetType();
         }
-        private void AddDropdown(SerializedProperty targetProperty, SerializedProperty nameProperty)
+        
+        private void AddDropdown(SerializedProperty targetProperty, SerializedProperty nameProperty,SerializedProperty parentProperty)
         {
+            var genericType = GetParentGenericType(parentProperty);
             GenericMenu nodesMenu = new GenericMenu();
             var go = targetProperty.objectReferenceValue as GameObject ?? (targetProperty.objectReferenceValue as Component)?.gameObject;
             
@@ -74,7 +89,7 @@ namespace MVVM.Editor
             {
                 foreach (var component in go.GetComponents<Component>())
                 {
-                    foreach (var propertyName in GetReactivePropertyNames(component.GetType()))
+                    foreach (var propertyName in GetReactivePropertyNames(component.GetType(),genericType))
                     {
                         bool equalNames = IsEquals(targetProperty, component, nameProperty, propertyName);
                         nodesMenu.AddItem(new GUIContent(GetName(component,propertyName)), equalNames,
@@ -87,10 +102,23 @@ namespace MVVM.Editor
             nodesMenu.AddItem(_noneLabel, noneField, () => OnSelectNone(targetProperty));
             nodesMenu.ShowAsContext();
         }
-
-        private List<string> GetReactivePropertyNames(Type type)
+        
+        private Type GetParentGenericType(SerializedProperty property)
         {
-            return type.GetAllReactive();
+            string[] fields = property.propertyPath.Split('.');
+            Type typeFromProperty = GetScriptTypeFromProperty(property);
+            FieldInfo info;
+            foreach (var fName in fields)
+            {
+                info = typeFromProperty.GetFieldDeep(fName);
+                typeFromProperty = info.FieldType;
+            }
+            return typeFromProperty.GenericTypeArguments[0];
+        }
+
+        private List<string> GetReactivePropertyNames(Type type, Type genericType)
+        {
+            return type.GetAllReactive(genericType);
         }
 
         private void OnSelectTarget(Component component,string propName, SerializedProperty targetProperty, SerializedProperty nameProperty)
