@@ -10,7 +10,7 @@ namespace MVVM.Editor
     {
         public static FieldInfo GetFieldDeep(this Type type, string fieldName)
         {
-            var field = type.GetField(fieldName);
+            var field = type.GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (field == null)
                 field =type.BaseType.GetFieldDeep(fieldName);
             return field;
