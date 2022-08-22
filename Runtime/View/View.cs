@@ -5,8 +5,9 @@ namespace MVVM
     public abstract class View<T> : MonoBehaviour
     {
         [SerializeField] private bool _autoUpdateOnEnable = true;
-        [SerializeField] public SyncReactiveProperty<T> _target;
+        [SerializeField] private SyncReactiveProperty<T> _target;
 
+        protected SyncReactiveProperty<T> Target => _target;
         protected T CurrentValue => _target.Property.Value;
         
         protected virtual void OnEnable()
