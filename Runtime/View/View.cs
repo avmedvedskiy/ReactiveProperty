@@ -4,7 +4,7 @@ namespace MVVM
 {
     public abstract class View<T> : MonoBehaviour
     {
-        [SerializeField] private bool _autoUpdateOnEnable = true;
+        [SerializeField] private bool _updateViewOnEnable = true;
         [SerializeField] private SyncReactiveProperty<T> _target;
 
         protected SyncReactiveProperty<T> Target => _target;
@@ -13,7 +13,7 @@ namespace MVVM
         protected virtual void OnEnable()
         {
             Bind();
-            if (_autoUpdateOnEnable)
+            if (_updateViewOnEnable)
                 UpdateView(CurrentValue);
         }
 
