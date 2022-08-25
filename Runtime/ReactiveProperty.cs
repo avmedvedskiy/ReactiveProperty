@@ -52,5 +52,10 @@ namespace MVVM
         {
             OnValueChanged -= action;
         }
+
+        public static implicit operator T(ReactiveProperty<T> source)
+        {
+            return source._value;
+        }
     }
 }
