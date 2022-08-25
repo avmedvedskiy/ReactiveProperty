@@ -3,6 +3,11 @@ using UnityEngine;
 
 namespace MVVM
 {
+    public class IgnoreGenerationAttribute : Attribute
+    {
+        
+    }
+    
     public interface IReactiveProperty
     {
     }
