@@ -43,7 +43,8 @@ namespace MVVM.Editor
         
         public static Type GetGenericTypeArguments(this SerializedProperty property)
         {
-            return property.GetTargetType().GenericTypeArguments[0];
+            var type = property.GetTargetType();
+            return type.GenericTypeArguments.Length > 0 ? type.GenericTypeArguments[0] : null;
         }
         
         public static Type GetScriptTypeFromProperty(this SerializedProperty property)

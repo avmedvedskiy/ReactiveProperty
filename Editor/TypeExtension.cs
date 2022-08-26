@@ -8,7 +8,6 @@ namespace MVVM.Editor
 {
     public static class TypeExtension
     {
-
         public static List<string> GetAllReactive(this Type type)
         {
             var props =
@@ -32,13 +31,21 @@ namespace MVVM.Editor
 
         public static List<string> GetAllReactive(this Type type, Type genericType)
         {
+            bool FilterPropertyInfoByGeneric(Type f)
+            {
+                if (genericType != null)
+                    return f.GenericTypeArguments.Length > 0 &&
+                           f.GenericTypeArguments[0] == genericType;
+                
+                return f.GenericTypeArguments.Length == 0; //если пришло нулл, то искать все у кого генериков 0
+            }
+
             var props =
                 type
                     .GetProperties()
                     .Where(f => !Attribute.IsDefined(f, typeof(IgnoreGenerationAttribute)) &&
                                 f.PropertyType.GetInterfaces().Contains(typeof(IReactiveProperty)))
-                    .Where(f => f.PropertyType.GenericTypeArguments.Length > 0 &&
-                                f.PropertyType.GenericTypeArguments[0] == genericType)
+                    .Where((f)=> FilterPropertyInfoByGeneric(f.PropertyType))
                     .Select(p => p.Name);
 
             var fields =
@@ -46,8 +53,7 @@ namespace MVVM.Editor
                     .GetFields()
                     .Where(f => !Attribute.IsDefined(f, typeof(IgnoreGenerationAttribute)) &&
                                 f.FieldType.GetInterfaces().Contains(typeof(IReactiveProperty)))
-                    .Where(f => f.FieldType.GenericTypeArguments.Length > 0 &&
-                                f.FieldType.GenericTypeArguments[0] == genericType)
+                    .Where((f)=> FilterPropertyInfoByGeneric(f.FieldType))
                     .Select(p => p.Name);
 
             return props

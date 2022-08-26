@@ -1,16 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 
 namespace MVVM.Editor
 {
-    [CustomPropertyDrawer(typeof(SyncReactiveProperty<>))]
-    public class SyncReactivePropertyDrawer : PropertyDrawer
+    public class BaseSyncPropertyDrawer : PropertyDrawer
     {
+        
         static readonly GUIContent _noneLabel = new GUIContent("None");
         private string type;
         //UnityEventDrawer 

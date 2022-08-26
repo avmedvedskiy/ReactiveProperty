@@ -12,4 +12,11 @@ namespace MVVM
         void Subscribe(Action<T> action);
         void UnSubscribe(Action<T> action);
     }
+    
+    public interface IReactiveEvent : IReactiveProperty
+    {
+        public void Subscribe(Action action);
+
+        public void UnSubscribe(Action action);
+    }
 }
