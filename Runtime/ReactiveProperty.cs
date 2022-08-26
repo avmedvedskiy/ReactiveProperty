@@ -4,22 +4,6 @@ using UnityEngine;
 
 namespace MVVM
 {
-    public class IgnoreGenerationAttribute : Attribute
-    {
-        
-    }
-    
-    public interface IReactiveProperty
-    {
-    }
-
-    public interface IReactiveProperty<T> : IReactiveProperty
-    {
-        T Value { get; set; }
-        void Subscribe(Action<T> action);
-        void UnSubscribe(Action<T> action);
-    }
-
     [Serializable]
     public class ReactiveProperty<T> : IReactiveProperty<T>
     {
