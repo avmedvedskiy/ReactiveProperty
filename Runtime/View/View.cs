@@ -8,7 +8,7 @@ namespace MVVM
         [SerializeField] private SyncReactiveProperty<T> _target;
 
         protected SyncReactiveProperty<T> Target => _target;
-        protected T CurrentValue => _target.Property.Value;
+        protected T CurrentValue => Target.Property.Value;
         
         protected virtual void OnEnable()
         {

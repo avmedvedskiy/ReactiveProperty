@@ -8,13 +8,6 @@ namespace MVVM.Editor
 {
     public static class TypeExtension
     {
-        public static FieldInfo GetFieldDeep(this Type type, string fieldName)
-        {
-            var field = type.GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            if (field == null)
-                field = type.BaseType.GetFieldDeep(fieldName);
-            return field;
-        }
 
         public static List<string> GetAllReactive(this Type type)
         {

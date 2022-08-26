@@ -35,17 +35,6 @@ namespace MVVM.Editor
             
             EditorGUI.EndProperty();
         }
-        
-        private static Type GetScriptTypeFromProperty(SerializedProperty property)
-        {
-            if (property.serializedObject.targetObject != null)
-                return property.serializedObject.targetObject.GetType();
-            SerializedProperty property1 = property.serializedObject.FindProperty("m_Script");
-            if (property1 == null)
-                return null;
-            MonoScript objectReferenceValue = property1.objectReferenceValue as MonoScript;
-            return  objectReferenceValue == null ?  null : objectReferenceValue.GetClass();
-        }
 
         private static void ClearNameProperty(SerializedProperty targetProperty, SerializedProperty nameProperty)
         {
@@ -81,7 +70,7 @@ namespace MVVM.Editor
         
         private void AddDropdown(SerializedProperty targetProperty, SerializedProperty nameProperty,SerializedProperty parentProperty)
         {
-            var genericType = GetParentGenericType(parentProperty);
+            var genericType = parentProperty.GetGenericTypeArguments();
             GenericMenu nodesMenu = new GenericMenu();
             var go = targetProperty.objectReferenceValue as GameObject ?? (targetProperty.objectReferenceValue as Component)?.gameObject;
             
@@ -101,19 +90,6 @@ namespace MVVM.Editor
             bool noneField = string.IsNullOrEmpty(nameProperty.stringValue);
             nodesMenu.AddItem(_noneLabel, noneField, () => OnSelectNone(targetProperty));
             nodesMenu.ShowAsContext();
-        }
-        
-        private Type GetParentGenericType(SerializedProperty property)
-        {
-            string[] fields = property.propertyPath.Split('.');
-            Type typeFromProperty = GetScriptTypeFromProperty(property);
-            FieldInfo info;
-            foreach (var fName in fields)
-            {
-                info = typeFromProperty.GetFieldDeep(fName);
-                typeFromProperty = info.FieldType;
-            }
-            return typeFromProperty.GenericTypeArguments[0];
         }
 
         private List<string> GetReactivePropertyNames(Type type, Type genericType)

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace MVVM
@@ -43,7 +44,7 @@ namespace MVVM
                 if (!Equals(_value, value))
                 {
                     _value = value;
-                    OnValueChanged?.Invoke(_value);
+                    Notify();
                 }
             }
         }
@@ -61,6 +62,12 @@ namespace MVVM
         public static implicit operator T(ReactiveProperty<T> source)
         {
             return source._value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void Notify()
+        {
+            OnValueChanged?.Invoke(_value);
         }
     }
 }
