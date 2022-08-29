@@ -9,7 +9,7 @@ namespace MVVM
     {
         [SerializeField] private Object _target;
         [SerializeField] private string _propertyName;
-        
+
         private IReactiveEvent _property;
 
         public IReactiveEvent Property =>

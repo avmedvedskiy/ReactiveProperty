@@ -31,14 +31,14 @@ namespace MVVM.Editor
             int i = 0;
             Type searchedType;
             var parentManagedReferenceType = property.GetParentManagedReferenceType();
-            if(parentManagedReferenceType == null)
+            if (parentManagedReferenceType == null)
                 searchedType = property.GetScriptTypeFromProperty();
             else
             {
                 searchedType = parentManagedReferenceType;
-                i = 1;//ignore first element, because first element getted in parent property if it managed reference
+                i = 1; //ignore first element, because first element getted in parent property if it managed reference
             }
-            
+
             FieldInfo info = null;
             for (; i < fields.Length; i++)
             {
@@ -46,8 +46,8 @@ namespace MVVM.Editor
                 info = searchedType.GetFieldDeep(fName);
                 searchedType = info.FieldType;
             }
-            return info;
 
+            return info;
         }
 
         private static Type GetParentManagedReferenceType(this SerializedProperty property)

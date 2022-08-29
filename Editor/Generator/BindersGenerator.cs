@@ -34,7 +34,8 @@ namespace MVVM.Editor
                     (p.IsPublic || p.IsNestedPublic)
                     && !p.IsAbstract);
 
-            string content = @"using System; using System.Collections.Generic;using MVVM;using UnityEngine; namespace MVVM.Generated{";
+            string content =
+                @"using System; using System.Collections.Generic;using MVVM;using UnityEngine; namespace MVVM.Generated{";
             List<Type> reactiveTypes = new();
             foreach (var type in types)
             {
@@ -63,7 +64,7 @@ namespace MVVM.Editor
                 }}
                 ";
             }
-            
+
 
             if (reactiveTypes.Count == 0)
             {

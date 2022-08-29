@@ -18,9 +18,17 @@ namespace MVVM
             OnEvent -= action;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void Notify()
         {
             OnEvent?.Invoke();
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            Notify();
+        }
+#endif
     }
 }

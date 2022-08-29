@@ -53,5 +53,17 @@ namespace MVVM
         {
             OnValueChanged?.Invoke(_value);
         }
+
+#if UNITY_EDITOR
+        private T _lastValue;
+        private void OnValidate()
+        {
+            if (!Equals(_value, _lastValue))
+            {
+                Notify();
+                _lastValue = _value;
+            }
+        }
+#endif
     }
 }
