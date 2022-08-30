@@ -23,12 +23,5 @@ namespace MVVM
         {
             OnEvent?.Invoke();
         }
-
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            Notify();
-        }
-#endif
     }
 }

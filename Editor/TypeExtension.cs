@@ -7,32 +7,32 @@ namespace MVVM.Editor
 {
     public static class TypeExtension
     {
-        public static List<FieldInfo> GetAllReactiveFields(this Type type)
+        public static List<FieldInfo> GetAllFields<T>(this Type type)
         {
             return type
                 .GetFields()
                 .Where(f => !Attribute.IsDefined(f, typeof(IgnoreGenerationAttribute)) &&
-                            f.FieldType.GetInterfaces().Contains(typeof(IReactiveProperty)))
+                            f.FieldType.GetInterfaces().Contains(typeof(T)))
                 .ToList();
         }
 
-        public static List<PropertyInfo> GetAllReactiveProperties(this Type type)
+        public static List<PropertyInfo> GetAllProperties<T>(this Type type)
         {
             return type
                 .GetProperties()
                 .Where(f => !Attribute.IsDefined(f, typeof(IgnoreGenerationAttribute)) &&
-                            f.PropertyType.GetInterfaces().Contains(typeof(IReactiveProperty)))
+                            f.PropertyType.GetInterfaces().Contains(typeof(T)))
                 .ToList();
         }
 
         public static List<string> GetAllReactive(this Type type)
         {
             var props =
-                type.GetAllReactiveProperties()
+                type.GetAllProperties<IReactiveProperty>()
                     .Select(p => p.Name);
 
             var fields =
-                type.GetAllReactiveFields()
+                type.GetAllFields<IReactiveProperty>()
                     .Select(p => p.Name);
 
             return props
@@ -52,12 +52,12 @@ namespace MVVM.Editor
             }
 
             var props =
-                type.GetAllReactiveProperties()
+                type.GetAllProperties<IReactiveProperty>()
                     .Where((f) => FilterPropertyInfoByGeneric(f.PropertyType))
                     .Select(p => p.Name);
 
             var fields =
-                type.GetAllReactiveFields()
+                type.GetAllFields<IReactiveProperty>()
                     .Where((f) => FilterPropertyInfoByGeneric(f.FieldType))
                     .Select(p => p.Name);
 
