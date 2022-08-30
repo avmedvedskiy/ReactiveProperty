@@ -19,7 +19,7 @@ namespace MVVM
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void Notify()
+        public void Notify()
         {
             OnEvent?.Invoke();
         }
