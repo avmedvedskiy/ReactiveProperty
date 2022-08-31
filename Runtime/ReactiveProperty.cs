@@ -53,5 +53,10 @@ namespace MVVM
         {
             OnValueChanged?.Invoke(_value);
         }
+
+        public void FromProperty(ReactiveProperty<T> reactiveProperty)
+        {
+            reactiveProperty.Subscribe(x => Value = x);
+        }
     }
 }
