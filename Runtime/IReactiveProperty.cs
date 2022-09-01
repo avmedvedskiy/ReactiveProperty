@@ -5,8 +5,12 @@ namespace MVVM
     public interface IReactiveProperty
     {
     }
+    
+    public interface IReactivePropertyValue : IReactiveProperty
+    {
+    }
 
-    public interface IReactiveProperty<T> : IReactiveProperty
+    public interface IReactiveProperty<T> : IReactivePropertyValue
     {
         T Value { get; set; }
         void Subscribe(Action<T> action);
@@ -18,5 +22,9 @@ namespace MVVM
         public void Subscribe(Action action);
 
         public void UnSubscribe(Action action);
+    }
+    
+    public interface IReactiveList : IReactiveProperty
+    {
     }
 }

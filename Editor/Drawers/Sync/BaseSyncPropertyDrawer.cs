@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace MVVM.Editor
 {
-    public class BaseSyncPropertyDrawer : PropertyDrawer
+    public class BaseSyncPropertyDrawer<T> : PropertyDrawer where T:IReactiveProperty
     {
         
         static readonly GUIContent _noneLabel = new GUIContent("None");
@@ -91,7 +91,7 @@ namespace MVVM.Editor
 
         private List<string> GetReactivePropertyNames(Type type, Type genericType)
         {
-            return type.GetAllReactive(genericType);
+            return type.GetAllReactive<T>(genericType);
         }
 
         private void OnSelectTarget(Component component,string propName, SerializedProperty targetProperty, SerializedProperty nameProperty)

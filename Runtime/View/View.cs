@@ -24,12 +24,12 @@ namespace MVVM
 
         private void Bind()
         {
-            _target.Subscribe(UpdateView);
+            Target.Subscribe(UpdateView);
         }
 
         private void UnBind()
         {
-            _target.UnSubscribe(UpdateView);
+            Target.UnSubscribe(UpdateView);
         }
 
         protected abstract void UpdateView(T value);

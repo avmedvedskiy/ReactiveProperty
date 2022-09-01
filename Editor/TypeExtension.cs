@@ -40,7 +40,7 @@ namespace MVVM.Editor
                 .ToList();
         }
 
-        public static List<string> GetAllReactive(this Type type, Type genericType)
+        public static List<string> GetAllReactive<T>(this Type type, Type genericType) where T: IReactiveProperty
         {
             bool FilterPropertyInfoByGeneric(Type f)
             {
@@ -52,12 +52,12 @@ namespace MVVM.Editor
             }
 
             var props =
-                type.GetAllProperties<IReactiveProperty>()
+                type.GetAllProperties<T>()
                     .Where((f) => FilterPropertyInfoByGeneric(f.PropertyType))
                     .Select(p => p.Name);
 
             var fields =
-                type.GetAllFields<IReactiveProperty>()
+                type.GetAllFields<T>()
                     .Where((f) => FilterPropertyInfoByGeneric(f.FieldType))
                     .Select(p => p.Name);
 

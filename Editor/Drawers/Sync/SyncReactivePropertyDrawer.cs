@@ -1,14 +1,20 @@
+using MVVM.Collections;
 using UnityEditor;
 
 namespace MVVM.Editor
 {
     [CustomPropertyDrawer(typeof(SyncReactiveProperty<>))]
-    public class SyncReactivePropertyDrawer : BaseSyncPropertyDrawer
+    public class SyncReactivePropertyDrawer : BaseSyncPropertyDrawer<IReactivePropertyValue>
     {
     }
-    
+
     [CustomPropertyDrawer(typeof(SyncReactiveEvent))]
-    public class SyncReactiveEventDrawer : BaseSyncPropertyDrawer
+    public class SyncReactiveEventDrawer : BaseSyncPropertyDrawer<IReactiveEvent>
+    {
+    }
+
+    [CustomPropertyDrawer(typeof(SyncReactiveList<>))]
+    public class SyncReactiveListDrawer : BaseSyncPropertyDrawer<IReactiveList>
     {
     }
 }
