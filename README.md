@@ -10,6 +10,8 @@
     - [List Example](#list-example)
 - [Generated Code](#generated-code)
 
+ [![Releases](https://img.shields.io/github/release/avmedvedskiy/ReactiveProperty.svg)](https://github.com/avmedvedskiy/ReactiveProperty/releases)
+ 
 ## Introduction 
 
 Custom realization of Reactive Property to implement MVVM patterns
