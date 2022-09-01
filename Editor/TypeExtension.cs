@@ -25,14 +25,14 @@ namespace MVVM.Editor
                 .ToList();
         }
 
-        public static List<string> GetAllReactive(this Type type)
+        public static List<string> GetAllReactive<T>(this Type type)
         {
             var props =
-                type.GetAllProperties<IReactiveProperty>()
+                type.GetAllProperties<T>()
                     .Select(p => p.Name);
 
             var fields =
-                type.GetAllFields<IReactiveProperty>()
+                type.GetAllFields<T>()
                     .Select(p => p.Name);
 
             return props

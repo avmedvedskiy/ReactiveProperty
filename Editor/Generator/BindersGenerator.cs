@@ -2,37 +2,74 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MVVM;
 using UnityEditor;
+using UnityEditor.Callbacks;
+using UnityEditor.Compilation;
 using UnityEngine;
 
 namespace MVVM.Editor
 {
+    [InitializeOnLoad]
     public static class BindersGenerator
     {
-        [MenuItem("Assets/Fix Compile Binding Errors")]
-        private static void ManualGeneration()
+        private const string PATH_TO_GENERATED_FILE = "Assets/Scripts/Generated/Resolvers/ResolversGenerated.cs";
+        private const string GENERATED_FILE_NAME = "ResolversGenerated.cs";
+        private const string ALL_REACTIVE_FIELDS_COUNT_KEY = "AllReactiveFields";
+
+        static BindersGenerator()
         {
-            Remove();
-            Generate();
-            AssetDatabase.Refresh();
+            CompilationPipeline.assemblyCompilationFinished += OnCompilationFinished;
         }
 
-        private static void Remove()
+        private static void OnCompilationFinished(string s, CompilerMessage[] compilerMessages)
         {
-            string path = $"{UnityEngine.Application.dataPath}/Scripts/Generated/Resolvers/ResolversGenerated.cs";
+            //if has compile errors try remove generated file
+            if (compilerMessages.Count(m => m.type == CompilerMessageType.Error) > 0)
+            {
+                bool errorInGeneratedClass = compilerMessages.Any(x => Path.GetFileName(x.file) == GENERATED_FILE_NAME);
+
+                if (errorInGeneratedClass)
+                {
+                    RemoveFile();
+                    EditorUtility.RequestScriptReload();
+                    //CompilationPipeline.RequestScriptCompilation();
+                }
+            }
+        }
+
+        private static void RemoveFile()
+        {
+            EditorApplication.LockReloadAssemblies();
+            string path = $"{Application.dataPath}/Scripts/Generated/Resolvers/ResolversGenerated.cs";
             if (File.Exists(path))
+            {
                 File.Delete(path);
+                EditorPrefs.DeleteKey(ALL_REACTIVE_FIELDS_COUNT_KEY);
+            }
+
+            EditorApplication.UnlockReloadAssemblies();
         }
 
-        [UnityEditor.Callbacks.DidReloadScripts]
+
+        [DidReloadScripts]
         private static void Generate()
         {
+            string filePath = $"{Application.dataPath}/Scripts/Generated/Resolvers/ResolversGenerated.cs";
+            if (!File.Exists(filePath))
+                EditorPrefs.DeleteKey(ALL_REACTIVE_FIELDS_COUNT_KEY); //clear cache when not exists
+            
             var types = TypeCache
                 .GetTypesDerivedFrom(typeof(MonoBehaviour))
                 .Where(p =>
                     (p.IsPublic || p.IsNestedPublic)
                     && !p.IsAbstract);
+
+
+            var count = types.Sum(x => x.GetAllReactive<IReactiveProperty>().Count);
+            int lastCount = EditorPrefs.GetInt(ALL_REACTIVE_FIELDS_COUNT_KEY);
+            if (count == lastCount)
+                return;
+
 
             string content =
                 @"using System; using System.Collections.Generic;using MVVM;using UnityEngine; namespace MVVM.Generated{";
@@ -40,7 +77,7 @@ namespace MVVM.Editor
             foreach (var type in types)
             {
                 var allReactive = type
-                    .GetAllReactive()
+                    .GetAllReactive<IReactiveProperty>()
                     .Select(name => $@"{{ ""{name}"", o => o.{name} }},")
                     .ToList();
 
@@ -68,7 +105,7 @@ namespace MVVM.Editor
 
             if (reactiveTypes.Count == 0)
             {
-                Remove();
+                RemoveFile();
                 return;
             }
 
@@ -88,6 +125,7 @@ namespace MVVM.Editor
             string path = $"{UnityEngine.Application.dataPath}/Scripts/Generated/Resolvers";
             Directory.CreateDirectory(path);
             File.WriteAllText($"{path}/ResolversGenerated.cs", content);
+            EditorPrefs.SetInt(ALL_REACTIVE_FIELDS_COUNT_KEY, count);
         }
     }
 }
