@@ -1,4 +1,5 @@
-
+ [![Releases](https://img.shields.io/github/release/avmedvedskiy/ReactiveProperty.svg)](https://github.com/avmedvedskiy/ReactiveProperty/releases)
+ 
 # ReactiveProperty
 - [Introduction](#introduction)
 - [Examples](#examples)
@@ -9,8 +10,6 @@
 - [Reactive Collection](#reactive-collection)
     - [List Example](#list-example)
 - [Generated Code](#generated-code)
-
- [![Releases](https://img.shields.io/github/release/avmedvedskiy/ReactiveProperty.svg)](https://github.com/avmedvedskiy/ReactiveProperty/releases)
  
 ## Introduction 
 
