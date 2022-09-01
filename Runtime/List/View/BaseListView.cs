@@ -10,7 +10,7 @@ namespace MVVM.Collections
     /// </summary>
     /// <typeparam name="TView">View Component, should be nested from ModelView</typeparam>
     /// <typeparam name="TModel">Model</typeparam>
-    public class ListView<TView, TModel> : ListView<TModel>
+    public class BaseListView<TView, TModel> : ListView<TModel>
         where TView : ModelView<TModel>
     {
         [SerializeField] private TView _template;
