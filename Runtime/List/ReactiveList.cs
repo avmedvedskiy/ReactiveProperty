@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MVVM
+namespace MVVM.Collections
 {
     [Serializable]
     public class ReactiveList<T> : IReactiveList, IList<T>
@@ -11,7 +11,6 @@ namespace MVVM
         [SerializeField] private List<T> _list = new();
 
         public event Action<T> OnAdd;
-        public event Action<T> OnRemove;
         public event Action OnClear;
         public event Action<int, T> OnInsert;
         public event Action<int> OnRemoveAt;
@@ -42,10 +41,11 @@ namespace MVVM
 
         public bool Remove(T item)
         {
-            bool result = _list.Remove(item);
-            if (result)
-                OnRemove?.Invoke(item);
-            return result;
+            int index = IndexOf(item);
+            if (index < 0)
+                return false;
+            RemoveAt(index);
+            return true;
         }
 
         public int IndexOf(T item)

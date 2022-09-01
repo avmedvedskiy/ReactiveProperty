@@ -1,8 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MVVM
+namespace MVVM.Collections
 {
+    /// <summary>
+    /// Abstract class for list view
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class ListView<T> : MonoBehaviour, IReactiveListEventHandler<T>
     {
         [SerializeField] private bool _updateViewOnEnable = true;
@@ -34,7 +38,6 @@ namespace MVVM
         }
         
         public abstract void OnAdd(T item);
-        public abstract void OnRemove(T item);
         public abstract void OnClear();
         public abstract void OnInsert(int index, T item);
         public abstract void OnRemoveAt(int index);

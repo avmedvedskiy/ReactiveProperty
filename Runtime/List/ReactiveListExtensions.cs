@@ -1,11 +1,10 @@
-namespace MVVM
+namespace MVVM.Collections
 {
     public static class ReactiveListExtensions
     {
         public static void Subscribe<T>(this ReactiveList<T> list, IReactiveListEventHandler<T> listener)
         {
             list.OnAdd += listener.OnAdd;
-            list.OnRemove += listener.OnRemove;
             list.OnClear += listener.OnClear;
             list.OnInsert += listener.OnInsert;
             list.OnRemoveAt += listener.OnRemoveAt;
@@ -16,7 +15,6 @@ namespace MVVM
         public static void UnSubscribe<T>(this ReactiveList<T> list, IReactiveListEventHandler<T> listener)
         {
             list.OnAdd -= listener.OnAdd;
-            list.OnRemove -= listener.OnRemove;
             list.OnClear -= listener.OnClear;
             list.OnInsert -= listener.OnInsert;
             list.OnRemoveAt -= listener.OnRemoveAt;

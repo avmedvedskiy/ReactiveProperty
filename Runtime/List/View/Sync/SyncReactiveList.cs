@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace MVVM
+namespace MVVM.Collections
 {
     [Serializable]
     public class SyncReactiveList<T>
