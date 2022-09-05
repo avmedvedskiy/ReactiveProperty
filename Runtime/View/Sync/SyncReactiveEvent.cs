@@ -5,7 +5,7 @@ using Object = UnityEngine.Object;
 namespace MVVM
 {
     [Serializable]
-    public class SyncReactiveEvent
+    public class SyncReactiveEvent: ISyncReactive
     {
         [SerializeField] private Object _target;
         [SerializeField] private string _propertyName;

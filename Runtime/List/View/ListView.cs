@@ -11,9 +11,9 @@ namespace MVVM.Collections
     {
         [SerializeField] private bool _updateViewOnEnable = true;
         [SerializeField] private SyncReactiveList<T> _target;
-        
+
         protected SyncReactiveList<T> Target => _target;
-        
+
         protected virtual void OnEnable()
         {
             Bind();
@@ -36,7 +36,7 @@ namespace MVVM.Collections
         {
             Target.UnSubscribe(this);
         }
-        
+
         public abstract void OnAdd(T item);
         public abstract void OnClear();
         public abstract void OnInsert(int index, T item);

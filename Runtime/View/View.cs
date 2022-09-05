@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace MVVM
 {
-    public abstract class View<T> : MonoBehaviour
+    public abstract class View<T> : MonoBehaviour 
     {
         [SerializeField] private bool _updateViewOnEnable = true;
         [SerializeField] private SyncReactiveProperty<T> _target;

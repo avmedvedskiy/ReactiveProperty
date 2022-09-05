@@ -10,7 +10,7 @@ namespace MVVM.Collections
     /// </summary>
     /// <typeparam name="TView">View Component, should be nested from ModelView</typeparam>
     /// <typeparam name="TModel">Model</typeparam>
-    public class BaseListView<TView, TModel> : ListView<TModel>
+    public abstract class BaseListView<TModel,TView> : ListView<TModel>
         where TView : ModelView<TModel>
     {
         [SerializeField] private TView _template;
@@ -48,7 +48,7 @@ namespace MVVM.Collections
                 .With(x => x.transform.SetSiblingIndex(index))
                 .With(x => x.SetValue(item));
                 */
-            //for simple type
+            //for simple type 
 
         public override void OnValueChanged(int index, TModel item) => _views[index].SetModel(item);
 
