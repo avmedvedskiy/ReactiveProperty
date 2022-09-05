@@ -7,33 +7,36 @@ namespace MVVM.Editor
 {
     public static class TypeExtension
     {
-        public static List<FieldInfo> GetAllFields<TInterface>(this Type type)
+        public static List<FieldInfo> GetAllFields<TInterface>(this Type type,
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public)
         {
             return type
-                .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .GetFields(flags)
                 .Where(f => !Attribute.IsDefined(f, typeof(IgnoreGenerationAttribute)) &&
                             f.FieldType.GetInterfaces().Contains(typeof(TInterface)))
                 .ToList();
         }
 
-        
-        public static List<PropertyInfo> GetAllProperties<TInterface>(this Type type)
+
+        public static List<PropertyInfo> GetAllProperties<TInterface>(this Type type,
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public)
         {
             return type
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .GetProperties(flags)
                 .Where(f => !Attribute.IsDefined(f, typeof(IgnoreGenerationAttribute)) &&
                             f.PropertyType.GetInterfaces().Contains(typeof(TInterface)))
                 .ToList();
         }
 
-        public static List<string> GetAllReactive<TInterface>(this Type type)
+        public static List<string> GetAllReactive<TInterface>(this Type type,
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public)
         {
             var props =
-                type.GetAllProperties<TInterface>()
+                type.GetAllProperties<TInterface>(flags)
                     .Select(p => p.Name);
 
             var fields =
-                type.GetAllFields<TInterface>()
+                type.GetAllFields<TInterface>(flags)
                     .Select(p => p.Name);
 
             return props

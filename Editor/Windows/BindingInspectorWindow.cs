@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -32,6 +33,17 @@ namespace MVVM.Editor
 
         [NonSerialized] private bool _locked = true;
         [NonSerialized] private GUIStyle _lockButtonStyle;
+
+        private List<Type> _cachedReactiveViewTypes;
+
+        private List<Type> CachedReactiveViewTypes =>
+            _cachedReactiveViewTypes ??= TypeCache
+                .GetTypesDerivedFrom(typeof(MonoBehaviour))
+                .Where(p =>
+                    (p.IsPublic || p.IsNestedPublic)
+                    && !p.IsAbstract)
+                .Where(x => x.GetAllReactive<ISyncReactive>(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Any())
+                .ToList();
 
         public void OnEnable()
         {
@@ -103,15 +115,7 @@ namespace MVVM.Editor
         {
             //remove IReactiveView
             GenericMenu nodesMenu = new GenericMenu();
-            var allView = TypeCache
-                .GetTypesDerivedFrom(typeof(MonoBehaviour))
-                .Where(p =>
-                    (p.IsPublic || p.IsNestedPublic)
-                    && !p.IsAbstract)
-                .Where(x => x.GetAllReactive<ISyncReactive>().Any())
-                .ToList();
-
-            foreach (var viewType in allView)
+            foreach (var viewType in CachedReactiveViewTypes)
             {
                 var genericType = viewType.GenericTypeArgumentDeep();
                 string group = genericType != null ? $"{genericType.Name}/" : string.Empty;
@@ -157,17 +161,6 @@ namespace MVVM.Editor
 
             serializedObject.ApplyModifiedProperties();
         }
-
-        private List<Type> _cachedReactiveViewTypes;
-
-        private List<Type> CachedReactiveViewTypes =>
-            _cachedReactiveViewTypes ??= TypeCache
-                .GetTypesDerivedFrom(typeof(MonoBehaviour))
-                .Where(p =>
-                    (p.IsPublic || p.IsNestedPublic)
-                    && !p.IsAbstract)
-                .Where(x => x.GetAllReactive<ISyncReactive>().Any())
-                .ToList();
 
         private void SelectionChanged()
         {
