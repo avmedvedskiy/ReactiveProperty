@@ -9,6 +9,7 @@
 	- [Video Example](#video-example)
 - [Reactive Collection](#reactive-collection)
     - [List Example](#list-example)
+- [Views Inspector](#views-inspector)
 - [Generated Code](#generated-code)
  
 ## Introduction 
@@ -130,6 +131,11 @@ Screens from Unity to show how its look in editor
 
 ![image](https://user-images.githubusercontent.com/17832838/187874435-d9a8f28f-06d6-4be1-aa57-79d865086e28.png)
 
+	
+## Views Inspector
+Custom window to manage all views on GameObject(include childs). Add new View Component, remove exists, change values
+	
+![image](https://user-images.githubusercontent.com/17832838/188481385-53332080-dfd8-4a89-9fc3-8f21fe705d30.png)
 
 ## Generated Code
 For all classes contained ReactiveProperty will be generated Dictionary map with string key and property value
