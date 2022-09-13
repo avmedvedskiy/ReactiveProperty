@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -9,14 +10,17 @@ namespace MVVM
     {
         private event Action<T> OnValueChanged;
         [SerializeField] private T _value;
+        private readonly EqualityComparer<T> _comparer;
 
         public ReactiveProperty()
         {
+            _comparer = EqualityComparer<T>.Default;
             _value = default;
         }
 
         public ReactiveProperty(T value)
         {
+            _comparer = EqualityComparer<T>.Default;
             _value = value;
         }
 
@@ -25,7 +29,7 @@ namespace MVVM
             get => _value;
             set
             {
-                if (!Equals(_value, value))
+                if (!_comparer.Equals(_value, value))
                 {
                     _value = value;
                     Notify();
