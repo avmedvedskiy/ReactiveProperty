@@ -10,17 +10,15 @@ namespace MVVM
     {
         private event Action<T> OnValueChanged;
         [SerializeField] private T _value;
-        private readonly EqualityComparer<T> _comparer;
+        private readonly EqualityComparer<T> _comparer = EqualityComparer<T>.Default;
 
         public ReactiveProperty()
         {
-            _comparer = EqualityComparer<T>.Default;
             _value = default;
         }
 
         public ReactiveProperty(T value)
         {
-            _comparer = EqualityComparer<T>.Default;
             _value = value;
         }
 
