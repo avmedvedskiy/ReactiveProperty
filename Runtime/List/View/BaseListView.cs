@@ -10,16 +10,17 @@ namespace MVVM.Collections
     /// </summary>
     /// <typeparam name="TView">View Component, should be nested from ModelView</typeparam>
     /// <typeparam name="TModel">Model</typeparam>
-    public abstract class BaseListView<TModel,TView> : ListView<TModel>
+    public abstract class BaseListView<TModel, TView> : ListView<TModel>
         where TView : ModelView<TModel>
     {
         [SerializeField] private TView _template;
         [SerializeField] private Transform _root;
-        [SerializeField] private List<TView> _views;
+        [SerializeField] private List<TView> _views = new();
+
+        protected Transform Root => _root;
 
         public override void OnAdd(TModel item) =>
-            _views.Add(InstantiateView()
-                .With(x => x.SetModel(item)));
+            _views.Add(InstantiateView(item));
 
         public override void OnClear()
         {
@@ -29,9 +30,8 @@ namespace MVVM.Collections
 
         public override void OnInsert(int index, TModel item) =>
             _views.Insert(index,
-                InstantiateView()
-                    .With(x => x.transform.SetSiblingIndex(index))
-                    .With(x => x.SetModel(item)));
+                InstantiateView(item)
+                    .With(x => x.transform.SetSiblingIndex(index)));
 
         public override void OnRemoveAt(int index)
         {
@@ -41,30 +41,32 @@ namespace MVVM.Collections
 
         public override void OnReplace(int index, TModel item) =>
             _views[index].SetModel(item);
-            //for struct or classes
-            /*
-            DestroyView(_views[index]);
-            _views[index] = Instantiate(template, _root)
-                .With(x => x.transform.SetSiblingIndex(index))
-                .With(x => x.SetValue(item));
-                */
-            //for simple type 
+        //for struct or classes
+        /*
+        DestroyView(_views[index]);
+        _views[index] = Instantiate(template, _root)
+            .With(x => x.transform.SetSiblingIndex(index))
+            .With(x => x.SetValue(item));
+            */
+        //for simple type 
 
         public override void OnValueChanged(int index, TModel item) => _views[index].SetModel(item);
 
         public override void OnInitialize(IReadOnlyList<TModel> values)
         {
+            //need to init only one time
+            if(_views.Count != 0)
+                return;
+            
             foreach (var value in values)
             {
-                _views.Add(InstantiateView()
-                    .With(x => x.SetModel(value)));
+                _views.Add(InstantiateView(value));
             }
         }
 
-        protected virtual TView InstantiateView()
-        {
-            return Instantiate(_template, _root);
-        }
+        protected virtual TView InstantiateView(TModel item) =>
+            Instantiate(_template, _root)
+                .With(x => x.SetModel(item));
 
         protected virtual void DestroyView(TView view)
         {

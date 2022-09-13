@@ -71,13 +71,19 @@ namespace MVVM.Collections
             set
             {
                 _list[index] = value;
-                OnReplace?.Invoke(index, value);
+                OnValueChanged?.Invoke(index, value);
             }
         }
 
         public void ValueChanged(int index)
         {
-            OnValueChanged?.Invoke(index, this[index]);
+            OnValueChanged?.Invoke(index, _list[index]);
+        }
+
+        public void Replace(int index, T item)
+        {
+            _list[index] = item;
+            OnReplace?.Invoke(index, this[index]);
         }
 
         public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();

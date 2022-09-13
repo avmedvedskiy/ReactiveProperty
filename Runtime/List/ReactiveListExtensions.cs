@@ -21,5 +21,23 @@ namespace MVVM.Collections
             list.OnReplace -= listener.OnReplace;
             list.OnValueChanged -= listener.OnValueChanged;
         }
+
+        public static void FromReactiveList<T>(this ReactiveList<T> source, ReactiveList<T> list)
+        {
+            foreach (var item in list)
+            {
+                source.Add(item);
+            }
+            
+            list.OnAdd += source.Add;
+            list.OnClear += source.Clear;
+            list.OnInsert += source.Insert;
+            list.OnRemoveAt += source.RemoveAt;
+            list.OnReplace += source.Replace;
+            list.OnValueChanged += (i, item) =>
+            {
+                source[i] = item;
+            };
+        }
     }
 }
