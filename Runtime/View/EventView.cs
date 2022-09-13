@@ -4,7 +4,6 @@ namespace MVVM
 {
     public abstract class EventView : MonoBehaviour
     {
-        [SerializeField] private bool _updateViewOnEnable = true;
         [SerializeField] private SyncReactiveEvent _target;
 
         protected SyncReactiveEvent Target => _target;
@@ -12,8 +11,6 @@ namespace MVVM
         protected virtual void OnEnable()
         {
             Bind();
-            if (_updateViewOnEnable)
-                UpdateView();
         }
 
         protected virtual void OnDisable()
