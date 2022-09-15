@@ -9,6 +9,7 @@ namespace MVVM
 
         protected SyncReactiveProperty<T> Target => _target;
         protected T CurrentValue => Target.Property.Value;
+        protected bool UpdateViewOnEnable => _updateViewOnEnable;
 
         protected virtual void OnEnable()
         {
