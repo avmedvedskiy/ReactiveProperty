@@ -35,6 +35,12 @@ namespace MVVM
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetWithoutNotify(T value)
+        {
+            _value = value;
+        }
+
         public void Subscribe(Action<T> action)
         {
             OnValueChanged += action;
