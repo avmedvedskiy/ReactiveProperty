@@ -17,6 +17,7 @@ namespace MVVM.Collections
         [SerializeField] private Transform _root;
         [SerializeField] private List<TView> _views = new();
 
+        protected List<TView> Views => _views;
         protected Transform Root => _root;
 
         public override void OnAdd(TModel item) =>

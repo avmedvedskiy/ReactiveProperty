@@ -10,10 +10,10 @@ namespace MVVM
         [SerializeField] private Object _target;
         [SerializeField] private string _propertyName;
 
-        private IReactiveProperty<T> _property;
+        private IReadOnlyReactiveProperty<T> _property;
 
-        public IReactiveProperty<T> Property =>
-            _property ??= (IReactiveProperty<T>)Binders.GetProperty(_target, _propertyName);
+        public IReadOnlyReactiveProperty<T> Property =>
+            _property ??= (IReadOnlyReactiveProperty<T>)Binders.GetProperty(_target, _propertyName);
 
         public void Subscribe(Action<T> action)
         {
