@@ -21,8 +21,8 @@ namespace MVVM
             var type = target.GetType();
             if (!_resolvers.ContainsKey(type))
             {
-                Debug.LogWarning("Warning, used ReflectionResolver, please check codogen");
-                return _reflectionResolver.Map(target, name);
+                Debug.LogWarning($"Warning, used ReflectionResolver, Target:{target} name={name}");
+                return target == null ? null : _reflectionResolver.Map(target, name);
             }
 
             return _resolvers[type].Map(target, name);

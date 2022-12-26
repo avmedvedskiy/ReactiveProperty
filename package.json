@@ -1,7 +1,7 @@
 {
   "name": "com.avmedvedskiy.reactiveproperty",
   "displayName": "Reactive Property",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "unity": "2021.3",
   "author": "avmedvedskiy",
   "description": "Reactive Property and MVVM binding view",
