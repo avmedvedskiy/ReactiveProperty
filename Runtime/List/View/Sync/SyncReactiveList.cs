@@ -5,12 +5,13 @@ using Object = UnityEngine.Object;
 namespace MVVM.Collections
 {
     [Serializable]
-    public class SyncReactiveList<T>: ISyncReactive
+    public class SyncReactiveList<T> : ISyncReactive
     {
         [SerializeField] private Object _target;
         [SerializeField] private string _propertyName;
 
         private ReactiveList<T> _property;
+        public bool IsNull() => _target == null || string.IsNullOrEmpty(_propertyName);
 
         public ReactiveList<T> Property =>
             _property ??= (ReactiveList<T>)Binders.GetProperty(_target, _propertyName);
