@@ -6,6 +6,7 @@ namespace MVVM
     {
         public IReactiveProperty Map(Object target, string name)
         {
+            Debug.LogWarning($"Warning, used ReflectionResolver, Target:{target} name={name}");
             //add cache
             var prop = target.GetType().GetProperty(name);
             if (prop == null)
