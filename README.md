@@ -19,8 +19,14 @@ Using zero reflection in runtime, use prebaked generation code for get propertie
 
 ## Examples
 ### ViewModel
-Monobehaviour ViewModel with Reactive Propertoes
+Monobehaviour ViewModel with Reactive Propertoes. 
+- ReactiveProperty will be updated when value are changed 
+- ReactiveEvent updated every time, even values are equals
 ```csharp
+
+public ReactiveEvent dummyEvent;
+public ReactiveEvent<bool> boolEvent;
+
 public ReactiveProperty<bool> boolProperty;
 public ReactiveProperty<int> intProperty { get; } = new();
 
