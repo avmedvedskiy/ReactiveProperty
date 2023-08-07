@@ -62,7 +62,8 @@ namespace MVVM.Editor
                 .GetTypesDerivedFrom(typeof(MonoBehaviour))
                 .Where(p =>
                     (p.IsPublic || p.IsNestedPublic)
-                    && !p.IsAbstract);
+                    && !p.IsAbstract)
+                .OrderBy(x=> x.FullName);
 
 
             var count = types.Sum(x => x.GetAllReactive<IReactiveProperty>().Count);
