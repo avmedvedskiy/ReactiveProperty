@@ -79,6 +79,7 @@ namespace MVVM.Editor
             {
                 var allReactive = type
                     .GetAllReactive<IReactiveProperty>()
+                    .OrderBy(x=> x)
                     .Select(name => $@"{{ ""{name}"", o => o.{name} }},")
                     .ToList();
 
