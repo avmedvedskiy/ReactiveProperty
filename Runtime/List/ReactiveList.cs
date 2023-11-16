@@ -8,7 +8,7 @@ namespace MVVM.Collections
     [Serializable]
     public class ReactiveList<T> : IReactiveList, IList<T>
     {
-        [SerializeField] private List<T> _list = new();
+        [SerializeField] private List<T> _list;
 
         public event Action<T> OnAdd;
         public event Action OnClear;
@@ -17,11 +17,13 @@ namespace MVVM.Collections
         public event Action<int, T> OnReplace;
         public event Action<int, T> OnValueChanged;
 
-
         public int Count => _list.Count;
         public bool IsReadOnly => false;
 
         public IReadOnlyList<T> Values => _list;
+
+        public ReactiveList(int capacity) => _list = new List<T>(capacity);
+        public ReactiveList() => _list = new List<T>();
 
         public void Add(T item)
         {
@@ -85,6 +87,16 @@ namespace MVVM.Collections
                     return _list[i];
             }
             return default;
+        }
+
+        public void AddRange(IList<T> collection)
+        {
+            int count = collection.Count;
+            _list.Capacity += count;
+            for (int i = 0; i < collection.Count; i++)
+            {
+                Add(collection[i]);
+            }
         }
 
         public T this[int index]
