@@ -64,6 +64,28 @@ namespace MVVM.Collections
             _list.RemoveAt(index);
             OnRemoveAt?.Invoke(index);
         }
+        
+        public int FindIndex(Predicate<T> match)
+        {
+            int num = _list.Count;
+            for (int i = 0; i < num; i++)
+            {
+                if (match(this._list[i]))
+                    return i;
+            }
+            return -1;
+        }
+        
+        public T Find(Predicate<T> match)
+        {
+            int num = _list.Count;
+            for (int i = 0; i < num; i++)
+            {
+                if (match(this._list[i]))
+                    return _list[i];
+            }
+            return default;
+        }
 
         public T this[int index]
         {
