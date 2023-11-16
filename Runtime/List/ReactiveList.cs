@@ -91,12 +91,9 @@ namespace MVVM.Collections
 
         public void AddRange(IList<T> collection)
         {
-            int count = collection.Count;
-            _list.Capacity += count;
+            _list.AddRange(collection);
             for (int i = 0; i < collection.Count; i++)
-            {
-                Add(collection[i]);
-            }
+                OnAdd?.Invoke(collection[i]);
         }
 
         public T this[int index]
