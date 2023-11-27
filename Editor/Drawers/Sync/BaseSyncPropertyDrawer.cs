@@ -20,10 +20,11 @@ namespace MVVM.Editor
             var nameProperty = property.FindPropertyRelative("_propertyName");
 
             var afterLabelPosition = EditorGUI.PrefixLabel(position, label);
-            afterLabelPosition.width /= 2;
+            afterLabelPosition.width /= 3f;
             EditorGUI.ObjectField(afterLabelPosition, targetProperty, GUIContent.none);
 
             afterLabelPosition.x += afterLabelPosition.width;
+            afterLabelPosition.width *= 2f;
             if (EditorGUI.DropdownButton(afterLabelPosition, DropdownContent(targetProperty, nameProperty),
                     FocusType.Keyboard))
             {
@@ -55,7 +56,7 @@ namespace MVVM.Editor
 
         private static string GetName(SerializedProperty targetProperty, SerializedProperty nameProperty)
         {
-            return $"{targetProperty.objectReferenceValue.GetType().Name}.{nameProperty.stringValue}";
+            return $"{nameProperty.stringValue}";
         }
 
         private static string GetName(Component c, string propertyName)
