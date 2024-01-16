@@ -25,5 +25,8 @@ namespace MVVM
         {
             Property?.UnSubscribe(action);
         }
+
+        public bool IsTargetSet() => _target != null && !string.IsNullOrEmpty(_propertyName);
+        public bool IsPropertyEquals(string propertyName) => propertyName == _propertyName;
     }
 }
