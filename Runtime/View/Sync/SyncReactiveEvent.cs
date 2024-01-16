@@ -25,5 +25,7 @@ namespace MVVM
         {
             Property?.UnSubscribe(action);
         }
+
+        public bool IsPropertyEquals(string propertyName) => propertyName == _propertyName;
     }
 }

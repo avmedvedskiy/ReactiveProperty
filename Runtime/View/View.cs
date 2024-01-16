@@ -34,7 +34,7 @@ namespace MVVM
         }
 
         protected abstract void UpdateView(T value);
-        public bool IsTargetSet() => _target != null && _target.IsTargetSet();
+        public bool IsTargetSet() => _target != null && !_target.IsNull();
         public bool IsPropertyEquals(string propertyName) => IsTargetSet() && _target.IsPropertyEquals(propertyName);
     }
 }
