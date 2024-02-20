@@ -29,31 +29,30 @@ namespace MVVM.Editor
         {
             string[] fields = property.propertyPath.Split('.');
             int i = 0;
-            Type searchedType;
-            var parentManagedReferenceType = property.GetParentManagedReferenceType();
+            Type searchedType = null;
+            var field = fields[i];
+            var parentManagedReferenceType = property.GetParentManagedReferenceType(field);
+
             if (parentManagedReferenceType == null)
+            {
                 searchedType = property.GetScriptTypeFromProperty();
+            }
             else
             {
-                searchedType = parentManagedReferenceType;
-                i = 1; //ignore first element, because first element getted in parent property if it managed reference
+                while (parentManagedReferenceType != null)
+                {
+                    searchedType = parentManagedReferenceType;
+                    field += "." + fields[++i];
+                    parentManagedReferenceType = property.GetParentManagedReferenceType(field);
+                }
             }
 
-            FieldInfo info = null;
-            for (; i < fields.Length; i++)
-            {
-                var fName = fields[i];
-                info = searchedType.GetFieldDeep(fName);
-                searchedType = info.FieldType;
-            }
-
-            return info;
+            return searchedType.GetFieldDeep(fields[fields.Length - 1]);
         }
 
-        private static Type GetParentManagedReferenceType(this SerializedProperty property)
+        private static Type GetParentManagedReferenceType(this SerializedProperty property, string field)
         {
-            string[] fields = property.propertyPath.Split('.');
-            var parentProperty = property.serializedObject.FindProperty(fields.First());
+            var parentProperty = property.serializedObject.FindProperty(field);
             return parentProperty?.GetManagedReferenceType();
         }
 
