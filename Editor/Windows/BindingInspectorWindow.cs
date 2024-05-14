@@ -38,11 +38,7 @@ namespace MVVM.Editor
 
         private List<Type> CachedReactiveViewTypes =>
             _cachedReactiveViewTypes ??= TypeCache
-                .GetTypesDerivedFrom(typeof(MonoBehaviour))
-                .Where(p =>
-                    (p.IsPublic || p.IsNestedPublic)
-                    && !p.IsAbstract)
-                .Where(x => x.GetAllReactive<ISyncReactive>(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Any())
+                .GetTypesDerivedFrom(typeof(View<>))
                 .ToList();
 
         public void OnEnable()

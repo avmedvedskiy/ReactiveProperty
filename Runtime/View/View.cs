@@ -2,7 +2,13 @@ using UnityEngine;
 
 namespace MVVM
 {
-    public abstract class View<T> : MonoBehaviour 
+    public interface IView
+    {
+        bool IsTargetSet();
+        bool IsPropertyEquals(string propertyName);
+    }
+    
+    public abstract class View<T> : MonoBehaviour,IView
     {
         [SerializeField] private bool _updateViewOnEnable = true;
         [SerializeField] private SyncReactiveProperty<T> _target = new();
