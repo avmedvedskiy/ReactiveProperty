@@ -48,15 +48,19 @@ namespace MVVM
                 {
                     foreach (var link in _links)
                     {
+                        EditorGUILayout.BeginVertical(GUI.skin.box);
+                        
                         EditorGUILayout.BeginHorizontal();
                         EditorGUILayout.PrefixLabel(link.Property);
                         EditorGUILayout.ObjectField((Object)link.View, typeof(Object), true);
                         EditorGUILayout.EndHorizontal();
-
+                        
                         EditorGUI.indentLevel++;
                         if (link.SerializedObject != null)
                             DoDrawDefaultInspector(link.SerializedObject);
+                        
                         EditorGUI.indentLevel--;
+                        EditorGUILayout.EndVertical();
                         EditorGUILayout.Separator();
                     }
                 }
