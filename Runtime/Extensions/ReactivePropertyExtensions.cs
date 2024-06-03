@@ -10,5 +10,15 @@ namespace MVVM
             source.Value = reactiveProperty.Value;
             reactiveProperty.Subscribe(x => source.Value = x);
         }
+        
+        public static void Subscribe<T>(this ReactiveProperty<T> source, IReadOnlyReactiveProperty<T> reactiveProperty)
+        {
+            reactiveProperty.Subscribe(source.Set);
+        }
+        
+        public static void UnSubscribe<T>(this ReactiveProperty<T> source, IReadOnlyReactiveProperty<T> reactiveProperty)
+        {
+            reactiveProperty.UnSubscribe(source.Set);
+        }
     }
 }

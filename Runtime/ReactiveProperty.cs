@@ -10,7 +10,6 @@ namespace MVVM
     {
         private event Action<T> OnValueChanged;
         [SerializeField] private T _value;
-        private readonly EqualityComparer<T> _comparer = EqualityComparer<T>.Default;
 
         public ReactiveProperty()
         {
@@ -27,18 +26,20 @@ namespace MVVM
             get => _value;
             set
             {
-                if (!_comparer.Equals(_value, value))
+                if (!EqualityComparer<T>.Default.Equals(_value, value))
                 {
                     _value = value;
-                    Notify();
+                    OnValueChanged?.Invoke(_value);
                 }
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetWithoutNotify(T value)
+        public void SetWithoutNotify(T value) => _value = value;
+
+        internal void Set(T value)
         {
             _value = value;
+            OnValueChanged?.Invoke(_value);
         }
 
         public void Subscribe(Action<T> action)
@@ -54,12 +55,6 @@ namespace MVVM
         public static implicit operator T(ReactiveProperty<T> source)
         {
             return source._value;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void Notify()
-        {
-            OnValueChanged?.Invoke(_value);
         }
     }
 }
