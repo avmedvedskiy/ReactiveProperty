@@ -3,6 +3,7 @@ using UnityEditor;
 
 namespace MVVM
 {
+#if REACTIVE_DEFAULT_INSPECTOR
     [CustomEditor(typeof(MonoBehaviour), true)]
     public class ReactiveDefaultInspector : UnityEditor.Editor
     {
@@ -18,4 +19,5 @@ namespace MVVM
             _reactiveLinkEditor.OnInspectorGUI();
         }
     }
+#endif
 }
