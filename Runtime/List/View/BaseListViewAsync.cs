@@ -3,14 +3,7 @@ using UnityEngine;
 
 namespace MVVM.Collections
 {
-    /// <summary>
-    /// Base realization for ReactiveList, contain View Component(ModelView) and Model type
-    /// you can make nested classes or use it for simple views
-    /// In Nested classes override InstantiateView and DestroyView methods for addressables/animatons/pools etc
-    /// </summary>
-    /// <typeparam name="TView">View Component, should be nested from ModelView</typeparam>
-    /// <typeparam name="TModel">Model</typeparam>
-    public abstract class BaseListView<TModel, TView> : MonoBehaviour, IReactiveListEventHandler<TModel>
+    public abstract class BaseListViewAsync<TModel, TView> : MonoBehaviour, IReactiveListEventHandler<TModel>
         where TView : ModelView<TModel>
     {
         [SerializeField] private SyncReactiveList<TModel> _target = new();
@@ -36,16 +29,31 @@ namespace MVVM.Collections
             _target.UnSubscribe(this);
         }
 
-        public void OnAdd(TModel item) =>
-            _views.Add(InstantiateView(item));
+        public void OnAdd(TModel item)
+        {
+            var instantiateOperation = InstantiateAsync(_template, _root);
+            instantiateOperation.completed += x =>
+            {
+                var result = instantiateOperation.Result[0];
+                _views.Add(result);
+                OnViewInstantiated(result, item);
+            };
+        }
 
         public void OnAddRange(List<TModel> items)
         {
             var itemsCount = items.Count;
             _views.Capacity = (_views.Count + itemsCount).GetListCapacity();
-
-            for (int i = 0; i < itemsCount; i++)
-                OnAdd(items[i]);
+            var instantiateOperation = InstantiateAsync(_template, itemsCount, _root);
+            instantiateOperation.completed += x =>
+            {
+                for (int j = 0; j < itemsCount; j++)
+                {
+                    var result = instantiateOperation.Result[j];
+                    _views.Add(result);
+                    OnViewInstantiated(result, items[j]);
+                }
+            };
         }
 
         public void OnClear()
@@ -56,9 +64,22 @@ namespace MVVM.Collections
 
         public void OnInsert(int index, TModel item)
         {
-            var view = InstantiateView(item);
-            _views.Insert(index, view);
-            view.transform.SetSiblingIndex(index);
+            var instantiateOperation = InstantiateAsync(_template, _root);
+            instantiateOperation.completed += x =>
+            {
+                var result = instantiateOperation.Result[0];
+                _views.Insert(index, result);
+                OnViewInstantiated(result, item);
+                result.transform.SetSiblingIndex(index);
+            };
+        }
+
+        private void OnViewInstantiated(TView view, TModel model)
+        {
+            view.SetModel(model);
+            view.transform.localPosition = Vector3.zero;
+            view.transform.localScale = Vector3.one;
+            view.transform.localRotation = Quaternion.identity;
         }
 
         public void OnRemoveAt(int index)
@@ -81,13 +102,6 @@ namespace MVVM.Collections
 
             if (items.Count > 0)
                 OnAddRange(items);
-        }
-
-        protected virtual TView InstantiateView(TModel item)
-        {
-            var view = Instantiate(_template, _root);
-            view.SetModel(item);
-            return view;
         }
 
         protected virtual void DestroyView(TView view)

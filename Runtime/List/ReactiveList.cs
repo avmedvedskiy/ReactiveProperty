@@ -10,17 +10,12 @@ namespace MVVM.Collections
     {
         [SerializeField] private List<T> _list;
 
-        public event Action<T> OnAdd;
-        public event Action OnClear;
-        public event Action<int, T> OnInsert;
-        public event Action<int> OnRemoveAt;
-        public event Action<int, T> OnReplace;
-        public event Action<int, T> OnValueChanged;
+        private IReactiveListEventHandler<T> _handler;
 
         public int Count => _list.Count;
         public bool IsReadOnly => false;
 
-        public IReadOnlyList<T> Values => _list;
+        public List<T> Values => _list;
 
         public ReactiveList(int capacity) => _list = new List<T>(capacity);
         public ReactiveList() => _list = new List<T>();
@@ -28,13 +23,13 @@ namespace MVVM.Collections
         public void Add(T item)
         {
             _list.Add(item);
-            OnAdd?.Invoke(item);
+            _handler?.OnAdd(item);
         }
 
         public void Clear()
         {
             _list.Clear();
-            OnClear?.Invoke();
+            _handler?.OnClear();
         }
 
         public bool Contains(T item) => _list.Contains(item);
@@ -58,42 +53,41 @@ namespace MVVM.Collections
         public void Insert(int index, T item)
         {
             _list.Insert(index, item);
-            OnInsert?.Invoke(index, item);
+            _handler?.OnInsert(index, item);
         }
 
         public void RemoveAt(int index)
         {
             _list.RemoveAt(index);
-            OnRemoveAt?.Invoke(index);
+            _handler?.OnRemoveAt(index);
         }
-        
+
         public int FindIndex(Predicate<T> match)
         {
-            int num = _list.Count;
-            for (int i = 0; i < num; i++)
+            int count = _list.Count;
+            for (int i = 0; i < count; i++)
             {
-                if (match(this._list[i]))
+                if (match(_list[i]))
                     return i;
             }
             return -1;
         }
-        
+
         public T Find(Predicate<T> match)
         {
-            int num = _list.Count;
-            for (int i = 0; i < num; i++)
+            int count = _list.Count;
+            for (int i = 0; i < count; i++)
             {
-                if (match(this._list[i]))
+                if (match(_list[i]))
                     return _list[i];
             }
             return default;
         }
 
-        public void AddRange(IList<T> collection)
+        public void AddRange(List<T> collection)
         {
             _list.AddRange(collection);
-            for (int i = 0; i < collection.Count; i++)
-                OnAdd?.Invoke(collection[i]);
+            _handler?.OnAddRange(collection);
         }
 
         public T this[int index]
@@ -102,19 +96,19 @@ namespace MVVM.Collections
             set
             {
                 _list[index] = value;
-                OnValueChanged?.Invoke(index, value);
+                _handler?.OnValueChanged(index, value);
             }
         }
 
         public void ValueChanged(int index)
         {
-            OnValueChanged?.Invoke(index, _list[index]);
+            _handler?.OnValueChanged(index, _list[index]);
         }
 
         public void Replace(int index, T item)
         {
             _list[index] = item;
-            OnReplace?.Invoke(index, this[index]);
+            _handler?.OnReplace(index, this[index]);
         }
 
         public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
@@ -123,5 +117,8 @@ namespace MVVM.Collections
         {
             return GetEnumerator();
         }
+
+        internal void SetHandler(IReactiveListEventHandler<T> handler)
+            => _handler = handler;
     }
 }
