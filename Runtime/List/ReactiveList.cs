@@ -122,6 +122,6 @@ namespace MVVM.Collections
             => _handler = handler;
 
         internal void UnSubscribe(IReactiveListEventHandler<T> handler)
-            => _handler = handler;
+            => _handler = null;
     }
 }
