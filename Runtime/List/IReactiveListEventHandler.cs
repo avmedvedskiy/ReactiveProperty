@@ -4,7 +4,7 @@ namespace MVVM.Collections
 {
     public interface IReactiveListEventHandler<T>
     {
-        void OnAddRange(List<T> items);
+        void OnAddRange(IReadOnlyList<T> items);
         void OnAdd(T item);
         void OnClear();
         void OnInsert(int index, T item);

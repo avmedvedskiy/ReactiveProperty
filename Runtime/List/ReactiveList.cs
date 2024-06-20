@@ -15,7 +15,7 @@ namespace MVVM.Collections
         public int Count => _list.Count;
         public bool IsReadOnly => false;
 
-        public List<T> Values => _list;
+        public IReadOnlyList<T> Values => _list;
 
         public ReactiveList(int capacity) => _list = new List<T>(capacity);
         public ReactiveList() => _list = new List<T>();
@@ -84,7 +84,7 @@ namespace MVVM.Collections
             return default;
         }
 
-        public void AddRange(List<T> collection)
+        public void AddRange(IReadOnlyList<T> collection)
         {
             _list.AddRange(collection);
             _handler?.OnAddRange(collection);

@@ -39,7 +39,7 @@ namespace MVVM.Collections
         public void OnAdd(TModel item) =>
             _views.Add(InstantiateView(item));
 
-        public void OnAddRange(List<TModel> items)
+        public void OnAddRange(IReadOnlyList<TModel> items)
         {
             var itemsCount = items.Count;
             _views.Capacity = (_views.Count + itemsCount).GetListCapacity();
@@ -73,7 +73,7 @@ namespace MVVM.Collections
         public void OnValueChanged(int index, TModel item)
             => _views[index].SetModel(item);
 
-        public void OnInitialize(List<TModel> items)
+        public void OnInitialize(IReadOnlyList<TModel> items)
         {
             //need to init only one time
             if (_views.Count != 0)
