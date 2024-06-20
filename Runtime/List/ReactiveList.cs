@@ -118,7 +118,10 @@ namespace MVVM.Collections
             return GetEnumerator();
         }
 
-        internal void SetHandler(IReactiveListEventHandler<T> handler)
+        internal void Subscribe(IReactiveListEventHandler<T> handler)
+            => _handler = handler;
+
+        internal void UnSubscribe(IReactiveListEventHandler<T> handler)
             => _handler = handler;
     }
 }

@@ -20,16 +20,6 @@ namespace MVVM.Collections
             return false;
         }
 
-        public static void Subscribe<T>(this ReactiveList<T> list, IReactiveListEventHandler<T> listener)
-        {
-            list.SetHandler(listener);
-        }
-
-        public static void UnSubscribe<T>(this ReactiveList<T> list, IReactiveListEventHandler<T> listener)
-        {
-            list.SetHandler(null);
-        }
-
         public static int GetListCapacity(this int count)
         {
             int num = (count == 0) ? 4 : (count * 2);
