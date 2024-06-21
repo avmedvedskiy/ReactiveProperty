@@ -7,8 +7,8 @@ namespace MVVM
         bool IsTargetSet();
         bool IsPropertyEquals(string propertyName);
     }
-    
-    public abstract class View<T> : MonoBehaviour,IView
+
+    public abstract class View<T> : MonoBehaviour, IView
     {
         [SerializeField] private bool _updateViewOnEnable = true;
         [SerializeField] private SyncReactiveProperty<T> _target = new();
@@ -19,24 +19,15 @@ namespace MVVM
 
         protected virtual void OnEnable()
         {
-            Bind();
+            _target.Subscribe(UpdateView);
+
             if (_updateViewOnEnable)
                 UpdateView(CurrentValue);
         }
 
         protected virtual void OnDisable()
         {
-            UnBind();
-        }
-
-        private void Bind()
-        {
-            Target.Subscribe(UpdateView);
-        }
-
-        private void UnBind()
-        {
-            Target.UnSubscribe(UpdateView);
+            _target.UnSubscribe(UpdateView);
         }
 
         protected abstract void UpdateView(T value);
