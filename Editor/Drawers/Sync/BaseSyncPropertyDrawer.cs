@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -29,7 +30,7 @@ namespace MVVM.Editor
                     FocusType.Keyboard))
             {
                 //Debug.Log($"{property.displayName} DropdownButton");
-                AddDropdown(targetProperty, nameProperty, property);
+                AddDropdown(targetProperty, nameProperty, fieldInfo);
             }
 
             ClearNameProperty(targetProperty, nameProperty);
@@ -72,9 +73,9 @@ namespace MVVM.Editor
         }
 
         private void AddDropdown(SerializedProperty targetProperty, SerializedProperty nameProperty,
-            SerializedProperty parentProperty)
+            FieldInfo info)
         {
-            var genericType = parentProperty.GetGenericTypeArguments();
+            var genericType = info.FieldType.GenericTypeArguments[0];
             GenericMenu nodesMenu = new GenericMenu();
             var go = targetProperty.objectReferenceValue as GameObject ??
                      (targetProperty.objectReferenceValue as Component)?.gameObject;
