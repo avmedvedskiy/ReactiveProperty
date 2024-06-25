@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace MVVM
 {
@@ -8,16 +10,15 @@ namespace MVVM
         {
             Debug.LogWarning($"Warning, used ReflectionResolver, Target:{target} name={name}");
             //add cache
-            var prop = target.GetType().GetProperty(name);
+            var type = target.GetType();
+            var prop = type.GetProperty(name);
             if (prop == null)
             {
-                var filed = target.GetType().GetField(name);
+                var filed = type.GetField(name);
                 return filed?.GetValue(target) as IReactiveProperty;
             }
-            else
-            {
-                return prop.GetValue(target) as IReactiveProperty;
-            }
+
+            return prop.GetValue(target) as IReactiveProperty;
         }
     }
 }

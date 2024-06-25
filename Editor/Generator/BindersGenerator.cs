@@ -58,12 +58,7 @@ namespace MVVM.Editor
             if (!File.Exists(filePath))
                 EditorPrefs.DeleteKey(ALL_REACTIVE_FIELDS_COUNT_KEY); //clear cache when not exists
             
-            var types = TypeCache
-                .GetTypesDerivedFrom(typeof(MonoBehaviour))
-                .Where(p =>
-                    (p.IsPublic || p.IsNestedPublic)
-                    && !p.IsAbstract)
-                .OrderBy(x=> x.FullName);
+            var types = GetAllMonoTypes();
 
 
             var count = types.Sum(x => x.GetAllReactive<IReactiveProperty>().Count);
@@ -80,26 +75,36 @@ namespace MVVM.Editor
                 var allReactive = type
                     .GetAllReactive<IReactiveProperty>()
                     .OrderBy(x=> x)
-                    .Select(name => $@"{{ ""{name}"", o => o.{name} }},")
+                    .Select(name => $@"""{name}"" => t.{name},")
                     .ToList();
 
                 if (allReactive.Count == 0)
                     continue;
+                
+                /*
+                            var t = ({type.FullName})target;
+                            return name switch
+                            {
+                                "{name}" => t.{name}
+                            };
+                */
+                
+                
 
                 reactiveTypes.Add(type);
                 content +=
                     $@"    
                 public class Resolver_{type.FullName.Replace('.', '_')}: IResolver
                 {{
-                        private Dictionary<string, Func<{type.FullName}, IReactiveProperty>> map = new()
+                    public IReactiveProperty Map(UnityEngine.Object target, string name)
+                    {{
+                        var t = ({type.FullName})target;
+                        return name switch
                         {{
-                            {string.Join("\r\n", allReactive)}
+                            {string.Join("\r\n                            ", allReactive)}
+                            _ => throw new ArgumentOutOfRangeException(nameof(name), name, $""Not Found Reactive {{name}}"")
                         }};
-
-                        public IReactiveProperty Map(UnityEngine.Object target, string name)
-                        {{
-                            return map[name].Invoke(target as {type.FullName});
-                        }}
+                    }}
                 }}
                 ";
             }
@@ -119,7 +124,8 @@ namespace MVVM.Editor
             {{
                 Binders.AddResolvers(new()
                 {{
-                    {string.Join("\r\n", reactiveTypes.Select(t => $"{{typeof({t.FullName}),new Resolver_{t.FullName.Replace('.', '_')}()}},"))}    
+                    {string.Join("\r\n                    ", 
+                        reactiveTypes.Select(t => $"{{typeof({t.FullName}),new Resolver_{t.FullName.Replace('.', '_')}()}},"))}    
                 }});
             }}
         }}}}";
@@ -128,6 +134,16 @@ namespace MVVM.Editor
             Directory.CreateDirectory(path);
             File.WriteAllText($"{path}/ResolversGenerated.cs", content);
             EditorPrefs.SetInt(ALL_REACTIVE_FIELDS_COUNT_KEY, count);
+        }
+
+        private static IOrderedEnumerable<Type> GetAllMonoTypes()
+        {
+            return TypeCache
+                .GetTypesDerivedFrom(typeof(MonoBehaviour))
+                .Where(p =>
+                    (p.IsPublic || p.IsNestedPublic)
+                    && !p.IsAbstract)
+                .OrderBy(x=> x.FullName);
         }
     }
 }
