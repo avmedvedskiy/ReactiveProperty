@@ -75,7 +75,9 @@ namespace MVVM.Editor
         private void AddDropdown(SerializedProperty targetProperty, SerializedProperty nameProperty,
             FieldInfo info)
         {
-            var genericType = info.FieldType.GenericTypeArguments[0];
+            var genericType = fieldInfo.FieldType.GenericTypeArguments.Length > 0
+                ? fieldInfo.FieldType.GenericTypeArguments[0]
+                : null;
             GenericMenu nodesMenu = new GenericMenu();
             var go = targetProperty.objectReferenceValue as GameObject ??
                      (targetProperty.objectReferenceValue as Component)?.gameObject;
