@@ -146,18 +146,17 @@ Custom window to manage all views on GameObject(include childs). Add new View Co
 ## Generated Code
 For all classes contained ReactiveProperty will be generated Dictionary map with string key and property value
 ```csharp
-public class Resolver_TestBeh : IResolver
+public class Resolver_SettingsWindow : IResolver
 {
-    private Dictionary<string, Func<TestBeh, IReactiveProperty>> map = new()
-    {
-        { "intProperty", o => o.intProperty },
-        { "boolProperty", o => o.boolProperty },
-        { "stringProperty", o => o.stringProperty },
-    };
-
     public IReactiveProperty Map(UnityEngine.Object target, string name)
     {
-        return map[name].Invoke(target as TestBeh);
+        var t = (SettingsWindow)target;
+        return name switch
+        {
+            "UserID" => t.UserID,
+            "Version" => t.Version,
+            _ => throw new ArgumentOutOfRangeException(nameof(name), name, $"Not Found Reactive {name}")
+        };
     }
 }
 
@@ -168,8 +167,7 @@ public static class BindersLoader
     {
         Binders.AddResolvers(new()
         {
-            { typeof(TestBeh), new Resolver_TestBeh() },
-            { typeof(TestBeh2), new Resolver_TestBeh2() },
+            { typeof(SettingsWindow), new Resolver_SettingsWindow() },
         });
     }
 }
