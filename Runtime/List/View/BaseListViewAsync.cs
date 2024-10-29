@@ -1,4 +1,4 @@
-/*
+#if UNITY_6000_0_OR_NEWER
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -77,10 +77,10 @@ namespace MVVM.Collections
 
         private void OnViewInstantiated(TView view, TModel model)
         {
-            view.SetModel(model);
             view.transform.localPosition = Vector3.zero;
             view.transform.localScale = Vector3.one;
             view.transform.localRotation = Quaternion.identity;
+            view.SetModel(model);
         }
 
         public void OnRemoveAt(int index)
@@ -117,4 +117,4 @@ namespace MVVM.Collections
         }
     }
 }
-*/
+#endif
