@@ -1,6 +1,6 @@
 {
   "name": "com.avmedvedskiy.reactiveproperty",
-  "displayName": "Reactive Property",
+  "displayName": "Infrastructure.ReactiveProperty",
   "version": "0.1.26",
   "unity": "2021.3",
   "author": "avmedvedskiy",
