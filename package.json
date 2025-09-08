@@ -1,7 +1,7 @@
 {
   "name": "com.avmedvedskiy.reactiveproperty",
   "displayName": "Infrastructure.ReactiveProperty",
-  "version": "0.1.26",
+  "version": "0.1.27",
   "unity": "2021.3",
   "author": "avmedvedskiy",
   "description": "Reactive Property and MVVM binding view",
@@ -9,5 +9,10 @@
     "binding",
     "MVVM",
     "ReactiveProperty"
-  ]
+  ],
+  "documentationUrl": "https://github.com/avmedvedskiy/ReactiveProperty",
+  "_upm":
+  {
+	  "changelog" : "### Update \n - Update documentation"
+  }
 }
