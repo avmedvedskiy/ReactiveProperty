@@ -1,29 +1,80 @@
-name: Publish to npm
+﻿name: Publish signed Unity UPM package to npm
 
-# Controls when the action will run.
-# In this case, I'm saying on each release event when it's specifically a new release publish, the types: [published] is required here,
-# since releases could also be updated or deleted, we only want to publish to npm when a new release is created (published).
 on:
   workflow_dispatch:
   release:
-   types: [published]
+    types: [published]
+
+env:
+  PACKAGE_PATH: "."
+  OUTPUT_PATH: "dist"
 
 jobs:
-  build:
-   runs-on: ubuntu-latest
-   steps:
-   # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-   - uses: actions/checkout@v2
-   #Install Node.js, with the version 12 and using the registry URL of npm, this could be changed to a custom registry or the GitHub registry.
-   - uses: actions/setup-node@v1
-     with:
-       node-version: 12
-       registry-url: https://registry.npmjs.com/
+  publish:
+    runs-on: ubuntu-latest
 
-   # Command to install the package dependencies
-   - run: yarn install
-    
-   # Publish to npm
-   - run: npm publish --access public
-     env:
-       NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js for npm publish
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          registry-url: "https://registry.npmjs.org/"
+
+      - name: Install Unity UPM CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          curl -fsSL https://cdn.packages.unity.com/upm-cli/install.sh | bash
+
+          echo "$HOME/.upm/bin" >> "$GITHUB_PATH"
+
+          "$HOME/.upm/bin/upm" --version
+
+      - name: Pack and sign Unity UPM package
+        shell: bash
+        env:
+          UPM_SERVICE_ACCOUNT_KEY_ID: ${{ secrets.UPM_SERVICE_ACCOUNT_KEY_ID }}
+          UPM_SERVICE_ACCOUNT_KEY_SECRET: ${{ secrets.UPM_SERVICE_ACCOUNT_KEY_SECRET }}
+          UNITY_ORGANIZATION_ID: ${{ secrets.UNITY_ORGANIZATION_ID }}
+        run: |
+          set -euo pipefail
+
+          mkdir -p "$OUTPUT_PATH"
+
+          upm pack "$PACKAGE_PATH" \
+            --organization-id "$UNITY_ORGANIZATION_ID" \
+            --destination "$OUTPUT_PATH"
+
+          echo "Created package:"
+          ls -la "$OUTPUT_PATH"
+
+          echo "Verify Unity signature:"
+          tar -tf "$OUTPUT_PATH"/*.tgz | grep -E '^package/\.attestation\.p7m$'
+
+      - name: Publish signed package to npm
+        shell: bash
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          PACKAGE_FILE="$(find "$OUTPUT_PATH" -name "*.tgz" -type f | head -n 1)"
+
+          if [ -z "$PACKAGE_FILE" ]; then
+            echo "No .tgz package found in $OUTPUT_PATH"
+            exit 1
+          fi
+
+          PACKAGE_FILE="$(realpath "$PACKAGE_FILE")"
+
+          echo "Publishing package: $PACKAGE_FILE"
+
+          npm publish "$PACKAGE_FILE" --access public
+
